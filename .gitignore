@@ -1,0 +1,42 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Environment variables (contains secrets)
+.env
+.env.local
+*.env
+
+# Azure credentials and secrets
+*.pfx
+*.cer
+*.pem
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Config files with sensitive data (keep templates)
+config/*.json
+!config/*.template.json
