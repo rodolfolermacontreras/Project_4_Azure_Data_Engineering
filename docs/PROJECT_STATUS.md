@@ -1,27 +1,260 @@
 # NYC Payroll Data Analytics - Project Status
 
-> This is the living document for tracking all project work, decisions, and progress.
+> Living document tracking all work, decisions, and progress per Udacity project requirements
 
 ---
 
-## Current Status
+## Current Status (2025-12-13)
 
-| Item | Status | Last Updated |
-|------|--------|--------------|
-| Project Setup | Completed | 2024-12-06 |
-| Step 1: Data Infrastructure | Not Started | - |
-| Step 2: Linked Services | Not Started | - |
-| Step 3: Datasets | Not Started | - |
-| Step 4: Data Flows | Not Started | - |
-| Step 5: Aggregation/Parameterization | Not Started | - |
-| Step 6: Pipeline Creation | Not Started | - |
-| Step 7: Trigger and Monitor | Not Started | - |
-| Step 8: Verify Artifacts | Not Started | - |
-| Step 9: GitHub Connection | Not Started | - |
+| Project Step | Status | Method | Completion Date |
+|-------------|--------|--------|-----------------|
+| Step 1: Infrastructure Setup | Complete + Screenshots | Automated scripts | 2025-12-13 |
+| Step 2: Linked Services (3) | Complete | Manual ADF Studio | 2025-12-13 |
+| Step 3: Datasets (12) | Complete | Manual ADF Studio | 2025-12-13 |
+| Step 4: Data Flows (5) | Complete + Screenshots | Python SDK (script 08) | 2025-12-13 |
+| Step 5: Aggregation Pipeline | Complete + Screenshots | Python SDK (script 09) | 2025-12-13 |
+| Step 6: Main Pipeline | Complete | Python SDK (script 10) | 2025-12-13 |
+| Step 7: Trigger and Monitor | In Progress - Running | Debug execution | 2025-12-13 |
+| Step 7: Verify Data | Not Started | - | - |
+
+---
+
+## PROJECT RECAP: What We've Built
+
+### STEP 1: Infrastructure (COMPLETE)
+
+**Azure Resources Created:**
+- Data Lake Gen2: `adlsnycpayrollrodolfol` with 3 containers
+  - dirpayrollfiles: 4 CSV files (AgencyMaster, EmpMaster, TitleMaster, nycpayroll_2021)
+  - dirhistoryfiles: 1 CSV file (nycpayroll_2020)
+  - dirstaging: Empty (for pipeline output)
+- SQL Server: `sqlserver-nycpayroll-rodolfo-l.database.windows.net`
+- SQL Database: `db_nycpayroll` with 6 tables (all empty, schema only)
+  - NYC_Payroll_AGENCY_MD
+  - NYC_Payroll_EMP_MD
+  - NYC_Payroll_TITLE_MD
+  - NYC_Payroll_Data_2020
+  - NYC_Payroll_Data_2021
+  - NYC_Payroll_Summary
+- Data Factory: `adf-nycpayroll-rodolfo-l`
+- Synapse Workspace: `synapse-nycpayroll-rodolfo-l`
+  - Database: udacity
+  - External Table: dbo.NYC_Payroll_Summary (points to dirstaging/NYC_Payroll_Summary.csv - file doesn't exist yet)
+  - External File Format: SynapseDelimitedTextFormat (comma-delimited)
+  - External Data Source: ExternalDataSourcePayroll
+
+**Scripts Used (Working):**
+- 01_create_infrastructure.py - Created all Azure resources
+- 02_upload_data.py - Uploaded 8 CSV files to Data Lake
+- 03_create_sql_tables.py - Created 6 SQL tables
+- 04_create_synapse_external_table.py - Attempted automation (failed, done manually)
+
+**Manual Steps Required:**
+- Created Synapse external table via Synapse Studio (sqlcmd limitations)
+
+**Screenshots Taken:** Data Lake with files, SQL tables, Synapse external table
+
+---
+
+### STEP 2: Linked Services (COMPLETE)
+
+**Created 3 Linked Services in ADF Studio:**
+1. ls_AdlsGen2 - Connection to Data Lake (account key auth)
+2. ls_SqlDatabase - Connection to SQL Database (SQL auth: sqladmin/P@ssw0rd1234!)
+3. ls_Synapse - Connection to Synapse serverless SQL (SQL auth: sqladmin/P@ssw0rd1234!)
+
+**Method:** Manual creation in ADF Studio (Azure CLI datafactory extension not working)
+
+**Scripts Attempted (Failed):**
+- 06_create_linked_services.py - Abandoned due to CLI extension issues
+
+**Documentation:** STEP2_LINKED_SERVICES.md
+
+---
+
+### STEP 3: Datasets (COMPLETE)
+
+**Created 12 Datasets in ADF Studio:**
+
+**CSV Source Datasets (5):**
+1. ds_AgencyMaster - dirpayrollfiles/AgencyMaster.csv
+2. ds_EmpMaster - dirpayrollfiles/EmpMaster.csv
+3. ds_TitleMaster - dirpayrollfiles/TitleMaster.csv
+4. ds_nycpayroll_2020 - dirhistoryfiles/nycpayroll_2020.csv
+5. ds_nycpayroll_2021 - dirpayrollfiles/nycpayroll_2021.csv
+
+**SQL Destination Datasets (6):**
+6. ds_NYC_Payroll_AGENCY_MD
+7. ds_NYC_Payroll_EMP_MD
+8. ds_NYC_Payroll_TITLE_MD
+9. ds_NYC_Payroll_Data_2020
+10. ds_NYC_Payroll_Data_2021
+11. ds_NYC_Payroll_Summary
+
+**Synapse Dataset (1):**
+12. ds_Synapse_NYC_Payroll_Summary - Empty schema (data doesn't exist yet)
+
+**Method:** Manual creation in ADF Studio (Azure CLI datafactory extension not working)
+
+**Scripts Attempted (Failed):**
+- 07_create_datasets.py - Abandoned due to CLI extension issues
+
+**Documentation:** STEP3_DATASETS.md
+
+---
+
+### STEP 4: Data Flows (IN PROGRESS)
+
+**Per Project Requirements:**
+Create 5 data flows to load CSV files from Data Lake → SQL Database
+
+**Required Data Flows:**
+1. df_Load_AgencyMaster - ds_AgencyMaster → ds_NYC_Payroll_AGENCY_MD
+2. df_Load_EmpMaster - ds_EmpMaster → ds_NYC_Payroll_EMP_MD
+3. df_Load_TitleMaster - ds_TitleMaster → ds_NYC_Payroll_TITLE_MD
+4. df_Load_2020_Payroll - ds_nycpayroll_2020 → ds_NYC_Payroll_Data_2020
+5. df_Load_2021_Payroll - ds_nycpayroll_2021 → ds_NYC_Payroll_Data_2021
+
+**Current Method:** Manual creation in ADF Studio
+**Reason:** Azure SDK installation blocked in virtual environment, CLI datafactory extension not working
+
+**Script Status:** 
+- 08_create_pipelines.py - Abandoned (SDK installation failed)
+
+**Next After Completion:**
+- Create 5 data flows manually in ADF Studio per STEP4_PIPELINES.md
+- Take screenshots of all 5 data flows
+- Export and save configuration files (ARM templates)
+
+---
+
+## Scripts Inventory
+
+### Active Scripts (Keep)
+| Script | Purpose | Status |
+|--------|---------|--------|
+| 01_create_infrastructure.py | Create Azure resources | Complete, working |
+| 02_upload_data.py | Upload CSV to Data Lake | Complete, working |
+| 03_create_sql_tables.py | Create SQL tables | Complete, working |
+| 04_create_synapse_external_table.py | Create Synapse objects | Partial (manual completion needed) |
+| 08_create_pipelines.py | Create 5 data flows via Python SDK | Running |
+
+### Deleted Scaffolding Scripts
+- 05_fix_synapse_external_table.py - Failed sqlcmd approach
+- 06_create_linked_services.py - Failed CLI extension
+- 07_create_datasets.py - Failed CLI extension
+- 02_create_synapse_objects_configured.sql - Temporary file
+
+---
+
+## Documentation Files
+
+| File | Purpose | Status |
+|------|---------|--------|
+| PROJECT_STATUS.md | This file - comprehensive tracking | Active |
+| OVERVIEW.md | Learning document explaining data engineering concepts | Complete |
+| STEP2_LINKED_SERVICES.md | Reference for linked services | Needs cleanup |
+| STEP3_DATASETS.md | Reference for datasets | Needs cleanup |
+| STEP4_PIPELINES.md | INCORRECT - talks about pipelines not data flows | Delete after Step 4 |
+
+---
+
+## Next Steps (Per Project Instructions)
 
 ---
 
 ## Work Log
+
+### 2025-12-13 - Azure Infrastructure Creation (Step 1)
+
+**Completed:**
+- Logged into Azure with Udacity lab credentials
+- Created Azure Data Lake Storage Gen2: `adlsnycpayrollrodolfol`
+  - Storage account with hierarchical namespace enabled
+  - Created 3 containers:
+    - `dirpayrollfiles` - For current payroll data (2021)
+    - `dirhistoryfiles` - For historical payroll data (2020)
+    - `dirstaging` - For pipeline staging area
+- Created Azure SQL Server: `sqlserver-nycpayroll-rodolfo-l.database.windows.net`
+  - Configured firewall to allow Azure services
+  - Created SQL Database: `db_nycpayroll` (Basic tier, 5 DTUs)
+  - SQL Admin User: `sqladmin`
+- Created Azure Data Factory: `adf-nycpayroll-rodolfo-l`
+- Created Azure Synapse Analytics: `synapse-nycpayroll-rodolfo-l`
+  - Created Synapse storage: `synapsestoragerodolfol`
+  - Configured firewall rule: AllowAllWindowsAzureIps
+  - SQL Admin User: `sqladmin`
+
+**Scripts Created:**
+- `scripts/azure/01_create_infrastructure.py` - Automated infrastructure creation with educational explanations
+  - Purpose: Create all Azure resources systematically
+- `scripts/azure/06_create_linked_services.py` - Attempted automated linked service creation
+  - Status: Failed due to datafactory extension installation issues
+  - Resolution: Created 3 linked services manually in ADF Studio (ls_AdlsGen2, ls_SqlDatabase, ls_Synapse)
+- `scripts/azure/07_create_datasets.py` - Attempted automated dataset creation
+  - Purpose: Create 12 datasets (5 CSV, 6 SQL, 1 Synapse)
+  - Status: Failed (datafactory CLI extension not working)
+  - Resolution: Creating manually in ADF Studio
+  
+**NOTE:** Scripts 06 and 07 marked for deletion after manual completion (scaffolding only)
+  - Will be kept as reference for infrastructure-as-code approach
+  - Includes WHY explanations for data scientist learning
+
+**Resources Summary:**
+- Subscription: UdacityDS - 195 (64e0993d-9026-4add-b0f9-284be5c9fcf3)
+- Resource Group: ODL-DataEng-292169
+- Location: West Europe
+- Student Suffix: rodolfo-l
+
+**Scripts Created:**
+- `scripts/azure/02_upload_data.py` - Upload CSV files to Data Lake
+  - Purpose: Automated data ingestion with verification
+  - Explains Bronze/Silver/Gold architecture
+  - Demonstrates separation of concerns pattern
+  - Successfully uploaded 8 files (3 master files to both containers, 2 payroll files to respective containers)
+
+**Data Upload Results:**
+- dirpayrollfiles: AgencyMaster.csv, EmpMaster.csv, TitleMaster.csv, nycpayroll_2021.csv (4 files)
+- dirhistoryfiles: AgencyMaster.csv, EmpMaster.csv, TitleMaster.csv, nycpayroll_2020.csv (4 files)
+- dirstaging: (empty, ready for pipeline use)
+
+**SCREENSHOT REQUIREMENTS:**
+- Resource Group overview showing all 5 resources
+- Storage Account showing 3 containers with uploaded files
+- SQL Database overview
+- Data Factory overview
+- Synapse workspace overview
+
+**SQL Tables Created:**
+- `scripts/azure/03_create_sql_tables.py` - Automated SQL table creation
+  - Created 6 tables in db_nycpayroll database
+  - Added firewall rule for local IP (76.146.90.11)
+  - Tables: AGENCY_MD, EMP_MD, TITLE_MD, Data_2020, Data_2021, Summary
+
+**Synapse External Table Created:**
+- `scripts/azure/04_create_synapse_external_table.py` - Synapse setup
+  - Created udacity database in Synapse serverless SQL pool
+  - Created external file format for CSV parsing
+  - Created external data source pointing to dirstaging container
+  - Created external table dbo.NYC_Payroll_Summary
+  - Added firewall rule for Synapse access
+
+**STEP 1 COMPLETE - READY FOR SCREENSHOTS:**
+1. Data Lake: 3 containers with 8 files total
+2. SQL Database: 6 tables ready for pipeline data
+3. Synapse: External table ready for aggregated results
+
+**Scripts Tracker (Step 1):**
+- 01_create_infrastructure.py - Infrastructure automation (KEEP as reference)
+- 02_upload_data.py - Data ingestion (KEEP as reference)
+- 03_create_sql_tables.py - SQL schema creation (KEEP as reference)
+- 04_create_synapse_external_table.py - Synapse setup (KEEP as reference)
+- 02_create_synapse_objects_configured.sql - Generated config (Can delete after screenshots)
+
+**Next Steps:**
+- Take screenshots per Step 1 requirements
+- Create OVERVIEW.md with data engineering concepts explained
+- Begin Step 2: Create Linked Services in Data Factory
 
 ### 2024-12-06 - Project Initialization
 
