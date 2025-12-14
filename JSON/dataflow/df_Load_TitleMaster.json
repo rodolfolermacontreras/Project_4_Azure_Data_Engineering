@@ -1,0 +1,29 @@
+{
+	"name": "df_Load_TitleMaster",
+	"properties": {
+		"description": "Load Title master data from Data Lake to SQL Database",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_TitleMaster",
+						"type": "DatasetReference"
+					},
+					"name": "source"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_NYC_Payroll_TITLE_MD",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"transformations": [],
+			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source\nsource sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tTitleCode as string,\n\t\tTitleDescription as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink"
+		}
+	}
+}
